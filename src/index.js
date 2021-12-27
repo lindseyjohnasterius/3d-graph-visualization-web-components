@@ -5,7 +5,6 @@ import "//unpkg.com/three-forcegraph"
 
 
 
-
 class GraphVisualization extends HTMLElement {
   connectedCallback(){
     // Gen random data
@@ -22,45 +21,41 @@ class GraphVisualization extends HTMLElement {
     };
 
     this.Graph = new ThreeForceGraph()
-      .graphData(gData);
+      .graphData(gData)
 
     // Setup renderer
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+    this.renderer = new THREE.WebGLRenderer()
+    this.renderer.setSize(this.width, this.height)
+    container.appendChild(this.renderer.domElement)
 
     // Setup scene
-    const scene = new THREE.Scene();
-    scene.add(this.Graph);
-    scene.add(new THREE.AmbientLight(0xbb00bb));
+    this.scene = new THREE.Scene()
+    this.scene.add(this.Graph)
+    this.scene.add(new THREE.AmbientLight(0xffffff))
 
     // Setup camera
     this.initCamera()
 
     // Add camera controls
-    const tbControls = new THREE.TrackballControls(this.camera, renderer.domElement);
-
-    // Kick-off renderer
-    const animate = () => { // IIFE
-      this.Graph.tickFrame();
-
-      // Frame cycle
-      tbControls.update();
-      renderer.render(scene, this.camera);
-      requestAnimationFrame(animate);
-    }
-
-    animate()
+    this.tbControls = new THREE.TrackballControls(this.camera, this.renderer.domElement)
+    this.animate()
 
   }
 
+  animate(){
+    this.Graph.tickFrame()
+    this.tbControls.update()
+    this.renderer.render(this.scene, this.camera)
+    requestAnimationFrame(() => this.animate())
+  }
+
   initCamera(){
-    const camera = this.camera = new THREE.PerspectiveCamera();
-    camera.far = 10000;
-    camera.aspect = this.width/this.height;
-    camera.updateProjectionMatrix();
-    camera.lookAt(this.Graph.position);
-    camera.position.z = 100;
+    const camera = this.camera = new THREE.PerspectiveCamera()
+    camera.far = 10000
+    camera.aspect = this.width/this.height
+    camera.updateProjectionMatrix()
+    camera.lookAt(this.Graph.position)
+    camera.position.z = 100
   }
 
   static get observedAttributes() {
