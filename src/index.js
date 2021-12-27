@@ -2,7 +2,7 @@ import "//unpkg.com/three"
 import "//unpkg.com/three-forcegraph"
 import "//unpkg.com/three/examples/js/controls/TrackballControls.js"
 import "//unpkg.com/three-forcegraph"
-
+import "./vendor/helpers.js"
 
 
 class GraphVisualization extends HTMLElement {
@@ -39,6 +39,8 @@ class GraphVisualization extends HTMLElement {
     // Add camera controls
     this.tbControls = new THREE.TrackballControls(this.camera, this.renderer.domElement)
     this.animate()
+
+    
 
   }
 
