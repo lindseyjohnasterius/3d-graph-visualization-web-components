@@ -10,20 +10,18 @@ class GraphVisualization extends HTMLElement {
   connectedCallback(){
     // Gen random data
 
+    this.width = window.innerWidth
+    this.height = window.innerHeight
+
     const container = document.createElement('div')
     this.appendChild(container)
-    const N = 300;
     const gData = {
-      nodes: [...Array(N).keys()].map(i => ({ id: i })),
-      links: [...Array(N).keys()]
-        .filter(id => id)
-        .map(id => ({
-          source: id,
-          target: Math.round(Math.random() * (id-1))
-        }))
+      nodes: [{id:'ANCHOR', x:0, y:0}],
+      links: []
+      
     };
 
-    const Graph = new ThreeForceGraph()
+    this.Graph = new ThreeForceGraph()
       .graphData(gData);
 
     // Setup renderer
@@ -33,29 +31,36 @@ class GraphVisualization extends HTMLElement {
 
     // Setup scene
     const scene = new THREE.Scene();
-    scene.add(Graph);
+    scene.add(this.Graph);
     scene.add(new THREE.AmbientLight(0xbb00bb));
 
     // Setup camera
-    const camera = new THREE.PerspectiveCamera();
-    camera.far = 10000;
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    camera.lookAt(Graph.position);
-    camera.position.z = Math.cbrt(N) * 180;
+    this.initCamera()
 
     // Add camera controls
-    const tbControls = new THREE.TrackballControls(camera, renderer.domElement);
+    const tbControls = new THREE.TrackballControls(this.camera, renderer.domElement);
 
     // Kick-off renderer
-    (function animate() { // IIFE
-      Graph.tickFrame();
+    const animate = () => { // IIFE
+      this.Graph.tickFrame();
 
       // Frame cycle
       tbControls.update();
-      renderer.render(scene, camera);
+      renderer.render(scene, this.camera);
       requestAnimationFrame(animate);
-    })()
+    }
+
+    animate()
+
+  }
+
+  initCamera(){
+    const camera = this.camera = new THREE.PerspectiveCamera();
+    camera.far = 10000;
+    camera.aspect = this.width/this.height;
+    camera.updateProjectionMatrix();
+    camera.lookAt(this.Graph.position);
+    camera.position.z = 100;
   }
 
   static get observedAttributes() {
