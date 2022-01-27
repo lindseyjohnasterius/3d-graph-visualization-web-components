@@ -2,7 +2,7 @@ import "//unpkg.com/three"
 import "//unpkg.com/three-forcegraph"
 import "//unpkg.com/three/examples/js/controls/TrackballControls.js"
 import "//unpkg.com/three-forcegraph"
-import "./vendor/helpers.js"
+import {getNewID} from "./vendor/helpers.js"
 
 
 class GraphVisualization extends HTMLElement {
@@ -39,8 +39,6 @@ class GraphVisualization extends HTMLElement {
     // Add camera controls
     this.tbControls = new THREE.TrackballControls(this.camera, this.renderer.domElement)
     this.animate()
-
-    
 
   }
 
@@ -81,6 +79,16 @@ customElements.define('graph-container', GraphVisualization)
 
 class GraphNode extends HTMLElement {
   connectedCallback(){
+
+    this.graph_node = this.closest('graph-container')
+
+    this.id = this.getAttribute('id')
+    if(this.id === null){
+      this.id = getNewID()
+    }
+
+    console.log(this.id, this.graph_node)
+
   }
 
   static get observedAttributes() {
